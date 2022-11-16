@@ -8,14 +8,6 @@ public class Delivery {
     private String bowler;
     private String totalruns;
 
-//    public Delivery(String id, String bowlingTeam, String extraRuns, String bowler, String total_runs) {
-//        this.id = id;
-//        this.bowlingTeam = bowlingTeam;
-//        this.extraRuns = extraRuns;
-//        this.bowler=bowler;
-//        this.totalruns=total_runs;
-//    }
-
     public String getMatchID() {
         return matchID;
     }

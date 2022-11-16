@@ -16,9 +16,7 @@ public class Main {
     private static final int DELIVERY_BOWLER = 8;
     private static final int DELIVERY_TOTALRUNS = 17;
 
-
     public static void main(String[] args) {
-
         List<Match> matches = getMatchesData();
         List<Delivery> deliveries = getDeliveriesData();
 
@@ -134,7 +132,7 @@ public class Main {
             System.out.println("Number of matches won by " + winCount.getKey() + " over all the years of IPL is: " + winCount.getValue());
         }
     }
-    
+
     static void findExtraRunsConcededPerTeam2016(List<Match> matches, List<Delivery> deliveryData) {
 
         Map<String, Integer> extraRuns = new HashMap<String, Integer>();

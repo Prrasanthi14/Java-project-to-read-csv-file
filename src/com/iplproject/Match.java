@@ -7,7 +7,6 @@ public class Match {
     private String winner;
     private String playerOfMatch;
 
-
     public String getId() {
         return id;
     }
