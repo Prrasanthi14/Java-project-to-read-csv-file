@@ -19,47 +19,30 @@ public class Main {
 
     public static void main(String[] args) {
 
-        List<Match> matchesPlayed = readMatchData();
-        List<Delivery> deliveryData = readDeliveryData();
-        boolean loop = true;
-        do {
-            System.out.println("\nEnter the question number (1-5) or 6 to quit");
-            Scanner sc = new Scanner(System.in);
-            int num = sc.nextInt();
-            switch (num) {
-                case 1:
-                    getSeasons(matchesPlayed);
-                    break;
-                case 2:
-                    getTeams(matchesPlayed);
-                    break;
-                case 3:
-                    getExtraRuns(matchesPlayed, deliveryData);
-                    break;
-                case 4:
-                    getEconomicPlayer(matchesPlayed, deliveryData);
-                    break;
-                case 5:
-                    getManOfMatch(matchesPlayed);
-                    break;
-                case 6:
-                    loop = false;
-                default:
-                    break;
-            }
-        } while (loop);
+        List<Match> matches = getMatchesData();
+        List<Delivery> deliveries = getDeliveriesData();
+
+        findNoOfMatchesPlayedInAYear(matches);
+
+        findNoOfMatchesWonByTeams(matches);
+
+        findExtraRunsConcededPerTeam2016(matches, deliveries);
+
+        findEconomicPlayer(matches, deliveries);
+
+        findManOfMatch(matches);
     }
 
 
-    public static List<Match> readMatchData() {
-        List<Match> matchesByRows = new ArrayList<>();
+    public static List<Match> getMatchesData() {
+        List<Match> matches = new ArrayList<>();
         try {
-            File matchesFile = new File("./matches.csv");
-            FileReader frMatch = new FileReader(matchesFile);
-            BufferedReader brMatch = new BufferedReader(frMatch);
+            File macthFile = new File("./matches.csv");
+            FileReader fileReader = new FileReader(macthFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
             String str = "";
             int i = 0;
-            while ((str = brMatch.readLine()) != null) {
+            while ((str = bufferedReader.readLine()) != null) {
                 if (i != 0) {
                     List<String> fields = new ArrayList<String>(Arrays.asList(str.split(",")));
 
@@ -73,40 +56,36 @@ public class Main {
                     match.setSeason(season);
                     match.setWinner(winner);
                     match.setPlayerOfMatch(playerOfMatch);
-                    
-                    matchesByRows.add(match);
+
+                    matches.add(match);
                 }
                 i++;
-
             }
-
+            bufferedReader.close();
         } catch (Exception e) {
             System.out.println(e);
         }
-        return matchesByRows;
+        return matches;
     }
 
-
-    public static List<Delivery> readDeliveryData() {
+    public static List<Delivery> getDeliveriesData() {
         List<Delivery> deliveriesByRows = new ArrayList<>();
         try {
             File deliveryFile = new File("./deliveries.csv");
-            FileReader frDelivery = new FileReader(deliveryFile);
-            BufferedReader brDelivery = new BufferedReader(frDelivery);
+            FileReader deliveryReader = new FileReader(deliveryFile);
+            BufferedReader deliveryBufferedReader = new BufferedReader(deliveryReader);
 
             String str = "";
             int i = 0;
-            while ((str = brDelivery.readLine()) != null) {
+            while ((str = deliveryBufferedReader.readLine()) != null) {
                 if (i != 0) {
-                    List<String> fields = new ArrayList<String>(Arrays.asList(str.split(",")));
+                    List<String> field = new ArrayList<String>(Arrays.asList(str.split(",")));
 
-
-                    String matchID = fields.get(DELIVERY_MATCHID);
-                    String bowlingTeam = fields.get(DELIVERY_BOWLINGTEAM);
-                    String extraRuns = fields.get(DELIVERY_EXTRARUNS);
-                    String bowler = fields.get(DELIVERY_BOWLER);
-                    String totalRuns = fields.get(DELIVERY_TOTALRUNS);
-
+                    String matchID = field.get(DELIVERY_MATCHID);
+                    String bowlingTeam = field.get(DELIVERY_BOWLINGTEAM);
+                    String extraRuns = field.get(DELIVERY_EXTRARUNS);
+                    String bowler = field.get(DELIVERY_BOWLER);
+                    String totalRuns = field.get(DELIVERY_TOTALRUNS);
 
                     Delivery delivery = new Delivery();
                     delivery.setMatchID(matchID);
@@ -118,56 +97,51 @@ public class Main {
                     deliveriesByRows.add(delivery);
                 }
                 i++;
-
             }
+            deliveryBufferedReader.close();
         } catch (Exception e) {
             System.out.println(e);
         }
         return deliveriesByRows;
     }
 
-
-    static void getSeasons(List<Match> matchesPlayed) {
-        Map<String, Integer> matchCounts = new HashMap<String, Integer>();
+    static void findNoOfMatchesPlayedInAYear(List<Match> matchesPlayed) {
+        Map<String, Integer> matchesCounts = new HashMap<String, Integer>();
         for (Match item : matchesPlayed) {
             if (item.getSeason() != null) {
                 String year = item.getSeason();
-                Integer j = matchCounts.get(year);
-                matchCounts.put(item.getSeason(), (j == null) ? 1 : j + 1);
+                Integer j = matchesCounts.get(year);
+                matchesCounts.put(item.getSeason(), (j == null) ? 1 : j + 1);
             }
         }
-        System.out.println("\n\tNumber of matches played per year of all the years in IPL.\n");
-        for (Map.Entry yearcount : matchCounts.entrySet()) {
-            System.out.println("Number of matches played in the year " + yearcount.getKey() + " is: " + yearcount.getValue());
+        for (Map.Entry yearCount : matchesCounts.entrySet()) {
+            System.out.println("Number of matches played in the year " + yearCount.getKey() + " is: " + yearCount.getValue());
         }
     }
 
-
-    static void getTeams(List<Match> matchesplayed) {
-        Map<String, Integer> teamwincount = new HashMap<String, Integer>();
+    static void findNoOfMatchesWonByTeams(List<Match> matchesplayed) {
+        Map<String, Integer> teamsWinCount = new HashMap<String, Integer>();
         for (Match item1 : matchesplayed) {
             if (item1.getWinner().length() > 0) {
                 String team = item1.getWinner();
-                Integer j = teamwincount.get(team);
-                teamwincount.put(item1.getWinner(), (j == null) ? 1 : j + 1);
+                Integer j = teamsWinCount.get(team);
+                teamsWinCount.put(item1.getWinner(), (j == null) ? 1 : j + 1);
             } else {
                 break;
             }
         }
-        System.out.println("\n\tNumber of matches won of all teams over all the years of IPL\n");
-        for (Map.Entry wincount : teamwincount.entrySet()) {
-            System.out.println("Number of matches won by " + wincount.getKey() + " over all the years of IPL is: " + wincount.getValue());
+        for (Map.Entry winCount : teamsWinCount.entrySet()) {
+            System.out.println("Number of matches won by " + winCount.getKey() + " over all the years of IPL is: " + winCount.getValue());
         }
     }
-
-
-    static void getExtraRuns(List<Match> matchesPlayed, List<Delivery> deliveryData) {
+    
+    static void findExtraRunsConcededPerTeam2016(List<Match> matches, List<Delivery> deliveryData) {
 
         Map<String, Integer> extraRuns = new HashMap<String, Integer>();
         List<String> ids = new ArrayList<>();
 
-        matchesPlayed.remove(0);
-        for (Match item : matchesPlayed) {
+        matches.remove(0);
+        for (Match item : matches) {
             if (item.getSeason().equals("2016")) {
                 ids.add(item.getId());
             }
@@ -184,14 +158,14 @@ public class Main {
                 extraRuns.put(d.getBowlingTeam(), Integer.parseInt(d.getExtraRuns()));
             }
         }
-        System.out.println("\n\tFor the year 2016 get the extra runs conceded per team\n");
+
         for (Map.Entry extra : extraRuns.entrySet()) {
             System.out.println("The extra runs conceded by " + extra.getKey() + " is: " + extra.getValue());
         }
     }
 
 
-    static void getEconomicPlayer(List<Match> matchesPlayed, List<Delivery> deliveryData) {
+    static void findEconomicPlayer(List<Match> matchesPlayed, List<Delivery> deliveryData) {
 
         List<String> ids = new ArrayList<>();
 
@@ -202,7 +176,7 @@ public class Main {
             }
         }
 
-        Map<String, Integer> countofBowlers = new HashMap<String, Integer>();
+        Map<String, Integer> countOfBowlers = new HashMap<String, Integer>();
         Map<String, Integer> totalRunsPerBowler = new HashMap<>();
         Map<String, Double> oversCount = new HashMap<>();
 
@@ -212,11 +186,11 @@ public class Main {
         for (Delivery bc : deliveryData) {
             if (ids.contains(bc.getMatchID())) {
                 String bowlerName = bc.getBowler();
-                if (countofBowlers.containsKey(bowlerName)) {
-                    int j = countofBowlers.get(bowlerName);
-                    countofBowlers.put(bc.getBowler(), j + 1);
+                if (countOfBowlers.containsKey(bowlerName)) {
+                    int j = countOfBowlers.get(bowlerName);
+                    countOfBowlers.put(bc.getBowler(), j + 1);
                 } else {
-                    countofBowlers.put(bc.getBowler(), 1);
+                    countOfBowlers.put(bc.getBowler(), 1);
                 }
             }
             i++;
@@ -228,21 +202,19 @@ public class Main {
                 if (totalRunsPerBowler.containsKey(bowlerName)) {
                     int j = totalRunsPerBowler.get(bowlerName);
                     totalRunsPerBowler.put(trb.getBowler(), j + Integer.parseInt(trb.getTotalruns()));
-
                 } else {
                     totalRunsPerBowler.put(trb.getBowler(), Integer.parseInt(trb.getTotalruns()));
                 }
                 if (totalRunsPerBowler.containsKey(bowlerName)) {
                     int j = totalRunsPerBowler.get(bowlerName);
                     double overs = j;
-                    int q = (int) overs / 6;
-                    double r = (overs % 6) / 3;
-                    double ans = BigDecimal.valueOf(r + q).setScale(2, RoundingMode.HALF_UP).doubleValue();
-                    oversCount.put(trb.getBowler(), ans);
+                    int quotient = (int) overs / 6;
+                    double remainder = (overs % 6) / 3;
+                    double totalOvers = BigDecimal.valueOf(remainder + quotient).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                    oversCount.put(trb.getBowler(), totalOvers);
                 } else {
                     oversCount.put(trb.getBowler(), Double.parseDouble(trb.getTotalruns()));
                 }
-
             }
         }
 
@@ -253,15 +225,13 @@ public class Main {
                     double runs = totalRunsPerBowler.get(bowlerName);
                     double bowlerOver = oversCount.get(bowlerName);
                     double playerEconomyCalc = runs / bowlerOver;
-                    double ans = Double.parseDouble(String.format("%.2f", playerEconomyCalc));
-                    economicPlayers.put(bowlerName, ans);
-
+                    double economyOfPlayer = Double.parseDouble(String.format("%.2f", playerEconomyCalc));
+                    economicPlayers.put(bowlerName, economyOfPlayer);
                 }
             }
         }
-        System.out.println("\n\tThe top Economical Bowlers of 2015 ");
 
-        List<Map.Entry<String,Double>> sortedEconomicPlayers=new ArrayList<Map.Entry<String,Double>>(economicPlayers.entrySet());
+        List<Map.Entry<String, Double>> sortedEconomicPlayers = new ArrayList<Map.Entry<String, Double>>(economicPlayers.entrySet());
         Collections.sort(sortedEconomicPlayers, new Comparator<Map.Entry<String, Double>>() {
             @Override
             public int compare(Map.Entry<String, Double> player1, Map.Entry<String, Double> player2) {
@@ -270,19 +240,19 @@ public class Main {
         });
 
         System.out.println("\n\tDisplaying top 10 economical players\n");
-        int j=1;
-        for (Map.Entry<String, Double> players:sortedEconomicPlayers) {
-            if (j<=10) {
-                System.out.println("PLayer name:"+players.getKey()+" "+players.getValue());
+        int j = 1;
+        for (Map.Entry<String, Double> players : sortedEconomicPlayers) {
+            if (j <= 10) {
+                System.out.println("PLayer name:" + players.getKey() + " Economy:" + players.getValue());
+            } else {
+                break;
             }
-            else{break;}
             j++;
         }
-
     }
 
 
-    static void getManOfMatch(List<Match> matchesplayed) {
+    static void findManOfMatch(List<Match> matchesplayed) {
         Map<String, Integer> manOfMatches = new HashMap<String, Integer>();
         for (Match item1 : matchesplayed) {
             if (item1.getPlayerOfMatch().length() > 0) {
@@ -293,11 +263,9 @@ public class Main {
                 break;
             }
         }
-        System.out.println("\n\tNumber of times the players were the man of the match in IPL.\n");
+
         for (Map.Entry count : manOfMatches.entrySet()) {
             System.out.println("Number of times " + count.getKey() + " had been the man of the match is: " + count.getValue());
         }
     }
-
-
 }
