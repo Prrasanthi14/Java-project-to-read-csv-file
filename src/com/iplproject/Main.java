@@ -41,7 +41,7 @@ public class Main {
             String str = "";
             int i = 0;
             while ((str = bufferedReader.readLine()) != null) {
-                if (i != 0) {
+               if (i != 0) {
                     List<String> fields = new ArrayList<String>(Arrays.asList(str.split(",")));
 
                     String id = fields.get(MATCH_ID);
